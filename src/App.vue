@@ -33,7 +33,11 @@ export default {
     },
     methods: {
         next() {
-            this.index++
+            if(this.index < 9) {
+                this.index++   
+            } else {
+                this.index = 0
+            }
         }
     },
     mounted: function() {
