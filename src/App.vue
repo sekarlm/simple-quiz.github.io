@@ -9,9 +9,11 @@
                 <b-col sm="6" offset="3">
                     <QuestionBox
                         v-if="questions.length"
-                        :currQuestion="questions[index]"
+                        :currQuestion="questions[indexQuestion]"
                         :next="next"
                         :increment="increment"
+                        :allowNext="allowNext"
+                        :score="[numCorrect, numTotal]"
                     />
                 </b-col>
             </b-row>
@@ -32,18 +34,23 @@ export default {
     data() {
         return {
             questions: [],
-            index: 0,
+            indexQuestion: 0,
             numCorrect: 0,
-            numTotal: 0
+            numTotal: 0,
+            allowNext: true
         }
     },
     methods: {
         next() {
-            if(this.index < 9) {
-                this.index++   
+            if(this.indexQuestion < 9) {
+                this.indexQuestion++
+                if (this.indexQuestion > 8) {
+                    this.allowNext = false
+                }
             } else {
-                this.index = 0
+                this.indexQuestion = 0
             }
+
         },
         increment(isCorrect) {
             if (isCorrect) {
