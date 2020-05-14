@@ -18,7 +18,11 @@
                 </b-list-group-item>
             </b-list-group>
 
-            <b-button variant="primary" href="#">
+            <b-button 
+            variant="primary"
+            @click="submitAnswer"
+            :disabled="selected === null || answered"
+            >
                 Submit
             </b-button>
             <b-button @click="next" variant="success" href="#">Next</b-button>
@@ -32,12 +36,15 @@ import _ from 'lodash'
 export default {
     props: {
         currQuestion: Object,
-        next: Function
+        next: Function,
+        increment: Function
     },
     data() {
         return {
             selected: null,
-            shuffledAnswers: []
+            shuffledAnswers: [],
+            correctIndex: null,
+            answered: null
         }
     },
     computed: {
@@ -52,6 +59,7 @@ export default {
             immediate: true,
             handler() {
                 this.selected = null
+                this.answered = false
                 this.shuffleAnswer()
             }
         }
@@ -63,6 +71,17 @@ export default {
         shuffleAnswer() {
             let answers = [...this.currQuestion.incorrect_answers, this.currQuestion.correct_answer]
             this.shuffledAnswers = _.shuffle(answers)
+            this.correctIndex = this.shuffledAnswers.indexOf(this.currQuestion.correct_answer)
+        },
+        submitAnswer() {
+            let isCorrect = false
+
+            if (this.selected === this.correctIndex) {
+                isCorrect = true
+            }
+
+            this.answered = true
+            this.increment(isCorrect)
         }
     },
     mounted() {
@@ -86,7 +105,7 @@ export default {
 }
 
 .selected {
-    background-color: aquamarine;
+    background-color: lightblue;
 }
 
 .correct {
