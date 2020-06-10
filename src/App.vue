@@ -1,19 +1,19 @@
 <template>
     <div id="app">
         <Header 
-            :numCorrect="numCorrect"
-            :numTotal="numTotal"
+            :numCorrect="correct_answer"
+            :numTotal="total_answered"
         />
         <b-container class="bv-example-row">
             <b-row>
                 <b-col sm="6" offset="3">
                     <QuestionBox
-                        v-if="questions.length"
-                        :currQuestion="questions[indexQuestion]"
+                        v-if="list_questions.length"
+                        :currQuestion="list_questions[indexQuestion]"
                         :next="next"
                         :increment="increment"
                         :allowNext="allowNext"
-                        :score="[numCorrect, numTotal]"
+                        :score="[correct_answer, total_answered]"
                     />
                 </b-col>
             </b-row>
@@ -35,9 +35,18 @@ export default {
         return {
             questions: [],
             indexQuestion: 0,
-            numCorrect: 0,
-            numTotal: 0,
             allowNext: true
+        }
+    },
+    computed: {
+        correct_answer() {
+            return this.$store.state.correct_answer
+        },
+        total_answered() {
+            return this.$store.state.total_answered
+        },
+        list_questions() {
+            return this.$store.state.questions
         }
     },
     methods: {
@@ -54,21 +63,13 @@ export default {
         },
         increment(isCorrect) {
             if (isCorrect) {
-                this.numCorrect++
+                this.$store.commit('correct_inc')
             }
-            this.numTotal++
+            this.$store.commit('total_inc')
         }
     },
-    mounted: function() {
-        fetch('https://opentdb.com/api.php?amount=10&category=18&type=multiple', {
-            method: 'get'
-        })
-        .then((response) => {
-            return response.json()
-        })
-        .then((jsonData) => {
-            this.questions = jsonData.results
-        })
+    mounted() {
+        this.$store.dispatch('get_questions')
     }
 }
 </script>
